@@ -1047,6 +1047,159 @@ footer {
 }
 
 /* =============================================
+   ARABIC FONT
+   ============================================= */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600&display=swap');
+
+body {
+  font-family: 'DM Sans', 'Noto Sans Arabic', sans-serif;
+}
+
+/* =============================================
+   LANGUAGE SWITCHER
+   ============================================= */
+.lang-switcher {
+  display: flex;
+  gap: 0;
+  border: 1px solid #D5CFC5;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.lang-btn {
+  padding: 6px 14px;
+  border: none;
+  background: #F4F1EC;
+  font-family: 'DM Sans', 'Noto Sans Arabic', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #8A7F73;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-right: 1px solid #D5CFC5;
+}
+
+.lang-btn:last-child {
+  border-right: none;
+}
+
+.lang-btn:hover {
+  background: #E8E3DB;
+  color: #3C3632;
+}
+
+.lang-btn.active {
+  background: #1C1917;
+  color: #C9B99A;
+}
+
+/* Language switcher in auth card */
+.auth-lang-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+/* =============================================
+   RTL OVERRIDES (Arabic)
+   ============================================= */
+[dir="rtl"] .field input,
+[dir="rtl"] .field select {
+  text-align: right;
+}
+
+[dir="rtl"] .asset-row input[type="number"] {
+  text-align: left;
+}
+
+[dir="rtl"] .asset-row input[type="text"] {
+  text-align: right;
+}
+
+[dir="rtl"] .disclaimer {
+  border-left: none;
+  border-right: 3px solid #D5CFC5;
+}
+
+[dir="rtl"] .remove-btn {
+  order: -1;
+}
+
+[dir="rtl"] .biz-card-header {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .biz-card-name {
+  padding-right: 0;
+  padding-left: 8px;
+  text-align: right;
+}
+
+[dir="rtl"] .biz-card-actions {
+  right: auto;
+  left: 12px;
+}
+
+[dir="rtl"] .dash-header {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .dash-greeting {
+  margin-right: 0;
+  margin-left: 6px;
+}
+
+[dir="rtl"] .dash-actions {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .dash-title-row {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .auth-tabs {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .nav-row {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .action-btns {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .lang-btn {
+  border-right: none;
+  border-left: 1px solid #D5CFC5;
+}
+
+[dir="rtl"] .lang-btn:last-child {
+  border-left: none;
+}
+
+[dir="rtl"] .save-indicator {
+  right: auto;
+  left: 24px;
+}
+
+/* =============================================
+   RESPONSIVE — RTL
+   ============================================= */
+@media (max-width: 600px) {
+  [dir="rtl"] .dash-header {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+
+  [dir="rtl"] .dash-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* =============================================
    PRINT
    ============================================= */
 @media print {
