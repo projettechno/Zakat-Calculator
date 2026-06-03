@@ -1,1031 +1,369 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr" dir="ltr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Zakat Calculator — Business & Commercial</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculateur Zakat Commerciale — Maroc</title>
+  <meta name="description" content="Calculateur de zakat conforme à la charia pour les entreprises marocaines." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23A69172'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="on-auth">
 
-<header>
-  <div class="header-ornament">&#10003; Halal Business Tools</div>
-  <h1>Business <span>Zakat</span> Calculator</h1>
-  <div class="gold-rule"></div>
-  <p>Shariah-compliant zakat calculation for businesses and traders. 2.5% on net zakatable wealth above nisab.</p>
-</header>
+  <header>
+    <div class="header-ornament" data-i18n="header.ornament">✓ Halal Business Tools</div>
+    <h1><span data-i18n="header.title">Business Zakat Calculator</span></h1>
+    <div class="gold-rule"></div>
+    <p data-i18n="header.subtitle">Shariah-compliant zakat calculation for Moroccan businesses. 2.5% on net zakatable wealth above nisab.</p>
+  </header>
 
-<div class="container">
+  <div class="container">
 
-  <!-- ============ AUTH SCREEN ============ -->
-  <div class="screen active" id="screen-auth">
-    <div class="auth-card">
-      <div class="auth-brand">
-        <div class="auth-ornament">&#10003; Halal Business Tools</div>
-        <h1>Business Zakat<br>Calculator</h1>
-        <div class="gold-rule"></div>
+    <!-- ========== AUTH ========== -->
+    <div class="screen active" id="screen-auth">
+      <div class="auth-card">
+        <div class="auth-lang-row">
+          <div class="lang-switcher">
+            <button class="lang-btn" data-lang="fr" onclick="i18n.set('fr')">FR</button>
+            <button class="lang-btn" data-lang="ar" onclick="i18n.set('ar')">عربي</button>
+            <button class="lang-btn" data-lang="en" onclick="i18n.set('en')">EN</button>
+          </div>
+        </div>
+        <div class="auth-brand">
+          <div class="auth-ornament" data-i18n="auth.ornament">✓ Halal Business Tools</div>
+          <h1 data-i18n="auth.title">Business Zakat<br>Calculator</h1>
+          <div class="gold-rule"></div>
+        </div>
+
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="showAuthTab('login')" data-i18n="auth.tab_login">Sign In</button>
+          <button class="auth-tab" onclick="showAuthTab('register')" data-i18n="auth.tab_register">Create Account</button>
+        </div>
+
+        <div id="auth-login" class="auth-form active">
+          <div class="field">
+            <label data-i18n="auth.label_email">Email</label>
+            <input type="email" id="login-email" data-i18n-ph="auth.ph_email" placeholder="you@company.com" />
+          </div>
+          <div class="field">
+            <label data-i18n="auth.label_password">Password</label>
+            <input type="password" id="login-password" data-i18n-ph="auth.ph_password" placeholder="••••••••" onkeydown="if(event.key==='Enter')handleLogin()" />
+          </div>
+          <div class="auth-error" id="login-error"></div>
+          <button class="btn-primary btn-full" onclick="handleLogin()" data-i18n="auth.btn_login">Sign In</button>
+        </div>
+
+        <div id="auth-register" class="auth-form">
+          <div class="field">
+            <label data-i18n="auth.label_name">Full name</label>
+            <input type="text" id="reg-name" data-i18n-ph="auth.ph_name" placeholder="Your name" />
+          </div>
+          <div class="field">
+            <label data-i18n="auth.label_email">Email</label>
+            <input type="email" id="reg-email" data-i18n-ph="auth.ph_email" placeholder="you@company.com" />
+          </div>
+          <div class="field">
+            <label data-i18n="auth.label_password">Password</label>
+            <input type="password" id="reg-password" data-i18n-ph="auth.ph_password" placeholder="••••••••" />
+          </div>
+          <div class="field">
+            <label data-i18n="auth.label_confirm">Confirm password</label>
+            <input type="password" id="reg-confirm" data-i18n-ph="auth.ph_confirm" placeholder="••••••••" onkeydown="if(event.key==='Enter')handleRegister()" />
+          </div>
+          <div class="auth-error" id="reg-error"></div>
+          <button class="btn-primary btn-full" onclick="handleRegister()" data-i18n="auth.btn_register">Create Account</button>
+        </div>
+
+        <p class="auth-note" data-i18n="auth.note">All data is stored locally on your device.</p>
       </div>
-
-      <div class="auth-tabs">
-        <button class="auth-tab active" onclick="showAuthTab('login')">Sign In</button>
-        <button class="auth-tab" onclick="showAuthTab('register')">Create Account</button>
-      </div>
-
-      <div id="auth-login" class="auth-form active">
-        <div class="field">
-          <label>Email</label>
-          <input type="email" id="login-email" placeholder="you@company.com" />
-        </div>
-        <div class="field">
-          <label>Password</label>
-          <input type="password" id="login-password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" onkeydown="if(event.key==='Enter')handleLogin()" />
-        </div>
-        <div class="auth-error" id="login-error"></div>
-        <button class="btn-primary btn-full" onclick="handleLogin()">Sign In</button>
-      </div>
-
-      <div id="auth-register" class="auth-form">
-        <div class="field">
-          <label>Full name</label>
-          <input type="text" id="reg-name" placeholder="Your name" />
-        </div>
-        <div class="field">
-          <label>Email</label>
-          <input type="email" id="reg-email" placeholder="you@company.com" />
-        </div>
-        <div class="field">
-          <label>Password</label>
-          <input type="password" id="reg-password" placeholder="Min 6 characters" />
-        </div>
-        <div class="field">
-          <label>Confirm password</label>
-          <input type="password" id="reg-confirm" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" onkeydown="if(event.key==='Enter')handleRegister()" />
-        </div>
-        <div class="auth-error" id="reg-error"></div>
-        <button class="btn-primary btn-full" onclick="handleRegister()">Create Account</button>
-      </div>
-
-      <p class="auth-note">All data is stored locally on your device.</p>
     </div>
+
+    <!-- ========== DASHBOARD ========== -->
+    <div class="screen" id="screen-dashboard">
+      <div class="dash-brand">
+        <span class="dash-brand-name" data-i18n="dash.brand">Business Zakat Calculator</span>
+        <span class="dash-brand-tag" data-i18n="dash.tag">Morocco</span>
+      </div>
+
+      <div class="dash-header">
+        <div>
+          <span class="dash-greeting" data-i18n="dash.greeting">Welcome,</span>
+          <span class="dash-name" id="dash-name"></span>
+        </div>
+        <div class="dash-actions">
+          <div class="lang-switcher">
+            <button class="lang-btn" data-lang="fr" onclick="i18n.set('fr')">FR</button>
+            <button class="lang-btn" data-lang="ar" onclick="i18n.set('ar')">عربي</button>
+            <button class="lang-btn" data-lang="en" onclick="i18n.set('en')">EN</button>
+          </div>
+          <button class="btn-secondary btn-sm" onclick="importBusiness()" data-i18n="dash.import">Import</button>
+          <button class="btn-secondary btn-sm" onclick="handleLogout()" data-i18n="dash.logout">Sign Out</button>
+        </div>
+      </div>
+
+      <div class="dash-title-row">
+        <h2 data-i18n="dash.title">Your Businesses</h2>
+        <button class="btn-primary btn-sm" onclick="showNewBizForm()" data-i18n="dash.btn_new">+ New Business</button>
+      </div>
+
+      <div class="new-biz-card" id="new-biz-card" style="display:none">
+        <div class="card-title"><div class="icon">+</div> <span data-i18n="dash.new_title">New business</span></div>
+        <div class="field">
+          <label data-i18n="dash.label_biz">Business name</label>
+          <input type="text" id="new-biz-name" data-i18n-ph="dash.ph_biz" placeholder="e.g. Al-Amin Trading" onkeydown="if(event.key==='Enter')confirmNewBusiness()" />
+        </div>
+        <div style="display:flex;gap:8px;margin-top:.5rem">
+          <button class="btn-primary btn-sm" onclick="confirmNewBusiness()" data-i18n="dash.btn_create">Create</button>
+          <button class="btn-secondary btn-sm" onclick="cancelNewBusiness()" data-i18n="dash.btn_cancel">Cancel</button>
+        </div>
+      </div>
+
+      <div class="biz-grid" id="biz-grid"></div>
+
+      <div class="empty-state" id="empty-state" style="display:none">
+        <div class="empty-icon">📊</div>
+        <h3 data-i18n="dash.empty_title">No businesses yet</h3>
+        <p data-i18n="dash.empty_desc">Create your first business profile to start calculating zakat.</p>
+        <button class="btn-primary btn-sm" onclick="showNewBizForm()" data-i18n="dash.btn_create_first">+ Create Business</button>
+      </div>
+
+      <div class="disclaimer" style="margin-top:2rem">
+        <strong data-i18n="dash.storage_note">All data is stored in your browser locally.</strong>
+      </div>
+    </div>
+
+    <!-- ========== STEPS ========== -->
+    <div class="steps">
+      <button class="step active" onclick="goTo(0)" id="step0"><span class="step-num">Step 1</span> <span data-i18n="step.settings">Settings</span></button>
+      <button class="step" onclick="goTo(1)" id="step1"><span class="step-num">Step 2</span> <span data-i18n="step.assets">Assets</span></button>
+      <button class="step" onclick="goTo(2)" id="step2"><span class="step-num">Step 3</span> <span data-i18n="step.liabilities">Liabilities</span></button>
+      <button class="step" onclick="goTo(3)" id="step3"><span class="step-num">Step 4</span> <span data-i18n="step.result">Result</span></button>
+    </div>
+
+    <!-- ========== SCREEN 0: SETTINGS ========== -->
+    <div class="screen" id="screen-0">
+      <div class="card">
+        <div class="card-title"><div class="icon">⚙</div> <span data-i18n="set.title">Calculation settings</span></div>
+
+        <div class="field-row">
+          <div class="field">
+            <label data-i18n="set.hawl">Zakat anniversary (hawl) date</label>
+            <input type="date" id="hawl-date" onchange="scheduleSave()" />
+          </div>
+          <div class="field">
+            <label data-i18n="set.madhab">Fiqh / madhab preference</label>
+            <select id="madhab" onchange="scheduleSave()">
+              <option value="general" data-i18n="set.madhab_general">General (mainstream Sunni)</option>
+              <option value="hanafi" data-i18n="set.madhab_hanafi">Hanafi</option>
+              <option value="maliki" data-i18n="set.madhab_maliki">Maliki</option>
+              <option value="shafi" data-i18n="set.madhab_shafi">Shafi'i</option>
+              <option value="hanbali" data-i18n="set.madhab_hanbali">Hanbali</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label data-i18n="set.nisab_basis">Nisab basis</label>
+          <div class="pill-group" id="nisab-toggle">
+            <button class="pill active" onclick="setNisab('silver',this)" data-i18n="set.nisab_silver">Silver (612.36g) — recommended</button>
+            <button class="pill" onclick="setNisab('gold',this)" data-i18n="set.nisab_gold">Gold (87.48g)</button>
+          </div>
+          <div class="field-hint" data-i18n="set.nisab_hint">Silver nisab is lower and benefits more zakat recipients.</div>
+        </div>
+
+        <div class="field">
+          <label data-i18n="set.nisab_value">Current nisab value (MAD)</label>
+          <input type="number" id="nisab-val" min="0" step="1" oninput="scheduleSave()" />
+          <div class="field-hint" data-i18n="set.nisab_value_hint">Update with today's live silver or gold price in dirhams.</div>
+        </div>
+
+        <div class="field">
+          <label data-i18n="set.biz_name">Business / entity name</label>
+          <input type="text" id="biz-name" data-i18n-ph="set.ph_biz" placeholder="e.g. Al-Amin Trading" oninput="scheduleSave()" />
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn-secondary" onclick="goTo('dashboard')" data-i18n="set.back">← Dashboard</button>
+        <button class="btn-primary" onclick="goTo(1)" data-i18n="set.next">Next: Enter Assets →</button>
+      </div>
+    </div>
+
+    <!-- ========== SCREEN 1: ASSETS ========== -->
+    <div class="screen" id="screen-1">
+      <div class="card">
+        <div class="card-title"><div class="icon">💰</div> <span data-i18n="ast.title">Zakatable assets</span></div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:1.25rem;" data-i18n="ast.desc">Include all liquid assets held for one full lunar year.</p>
+
+        <div class="asset-section">
+          <div class="asset-section-label">
+            <span data-i18n="ast.cash">Cash & bank balances</span>
+            <span class="asset-section-total" id="total-cash">0.00</span>
+          </div>
+          <div id="cash-rows">
+            <div class="asset-row">
+              <input type="text" data-i18n-ph="ast.cash_ph" placeholder="Account / description" oninput="scheduleSave()" />
+              <input type="number" data-i18n-ph="ast.amt_ph" placeholder="0.00" min="0" step="0.01" class="cash-amt" oninput="updateTotals();scheduleSave()" />
+              <button class="remove-btn" onclick="removeRow(this)" aria-label="Remove row">×</button>
+            </div>
+          </div>
+          <button class="add-btn" onclick="addAssetRow('cash-rows','cash-amt')" data-i18n="ast.add_cash">+ Add bank account or cash balance</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="asset-section">
+          <div class="asset-section-label">
+            <span data-i18n="ast.recv">Trade receivables (collectible within hawl)</span>
+            <span class="asset-section-total" id="total-recv">0.00</span>
+          </div>
+          <div id="recv-rows">
+            <div class="asset-row">
+              <input type="text" data-i18n-ph="ast.recv_ph" placeholder="Client / invoice" oninput="scheduleSave()" />
+              <input type="number" data-i18n-ph="ast.amt_ph" placeholder="0.00" min="0" step="0.01" class="recv-amt" oninput="updateTotals();scheduleSave()" />
+              <button class="remove-btn" onclick="removeRow(this)" aria-label="Remove row">×</button>
+            </div>
+          </div>
+          <button class="add-btn" onclick="addAssetRow('recv-rows','recv-amt')" data-i18n="ast.add_recv">+ Add receivable</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="asset-section">
+          <div class="asset-section-label">
+            <span data-i18n="ast.inv">Inventory / stock for resale (market value)</span>
+            <span class="asset-section-total" id="total-inv">0.00</span>
+          </div>
+          <div id="inv-rows">
+            <div class="asset-row">
+              <input type="text" data-i18n-ph="ast.inv_ph" placeholder="Item / category" oninput="scheduleSave()" />
+              <input type="number" data-i18n-ph="ast.amt_ph" placeholder="0.00" min="0" step="0.01" class="inv-amt" oninput="updateTotals();scheduleSave()" />
+              <button class="remove-btn" onclick="removeRow(this)" aria-label="Remove row">×</button>
+            </div>
+          </div>
+          <button class="add-btn" onclick="addAssetRow('inv-rows','inv-amt')" data-i18n="ast.add_inv">+ Add inventory line</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="asset-section">
+          <div class="asset-section-label">
+            <span data-i18n="ast.other">Other liquid assets (investments, crypto, stocks)</span>
+            <span class="asset-section-total" id="total-other">0.00</span>
+          </div>
+          <div id="other-rows">
+            <div class="asset-row">
+              <input type="text" data-i18n-ph="ast.other_ph" placeholder="Description" oninput="scheduleSave()" />
+              <input type="number" data-i18n-ph="ast.amt_ph" placeholder="0.00" min="0" step="0.01" class="other-amt" oninput="updateTotals();scheduleSave()" />
+              <button class="remove-btn" onclick="removeRow(this)" aria-label="Remove row">×</button>
+            </div>
+          </div>
+          <button class="add-btn" onclick="addAssetRow('other-rows','other-amt')" data-i18n="ast.add_other">+ Add liquid asset</button>
+        </div>
+
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0">
+          <span style="font-size:14px;font-weight:500;color:#1C1917" data-i18n="ast.total">Total zakatable assets</span>
+          <span style="font-size:18px;font-weight:500;color:#1C1917;font-family:'Playfair Display',serif" id="total-assets-display">0.00</span>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn-secondary" onclick="goTo(0)" data-i18n="ast.back">← Back</button>
+        <button class="btn-primary" onclick="goTo(2)" data-i18n="ast.next">Next: Liabilities →</button>
+      </div>
+    </div>
+
+    <!-- ========== SCREEN 2: LIABILITIES ========== -->
+    <div class="screen" id="screen-2">
+      <div class="card">
+        <div class="card-title"><div class="icon">📋</div> <span data-i18n="lia.title">Deductible liabilities</span></div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:1.25rem;" data-i18n="lia.desc">Deduct short-term debts, taxes owed, and bills due within the year.</p>
+
+        <div class="asset-section">
+          <div class="asset-section-label">
+            <span data-i18n="lia.label">Short-term debts & payables</span>
+            <span class="asset-section-total" id="total-liab">0.00</span>
+          </div>
+          <div id="liab-rows">
+            <div class="asset-row">
+              <input type="text" data-i18n-ph="lia.ph" placeholder="Creditor / description" oninput="scheduleSave()" />
+              <input type="number" data-i18n-ph="ast.amt_ph" placeholder="0.00" min="0" step="0.01" class="liab-amt" oninput="updateTotals();scheduleSave()" />
+              <button class="remove-btn" onclick="removeRow(this)" aria-label="Remove row">×</button>
+            </div>
+          </div>
+          <button class="add-btn" onclick="addAssetRow('liab-rows','liab-amt')" data-i18n="lia.add">+ Add liability</button>
+        </div>
+
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0">
+          <span style="font-size:14px;font-weight:500;color:#1C1917" data-i18n="lia.net">Net zakatable wealth</span>
+          <span style="font-size:18px;font-weight:500;font-family:'Playfair Display',serif" id="net-display">0.00</span>
+        </div>
+      </div>
+
+      <div class="card" style="background:#E8E3DB;border-style:dashed;">
+        <div class="card-title"><div class="icon">ℹ</div> <span data-i18n="lia.info_title">What to include</span></div>
+        <ul style="font-size:13px;color:#8A7F73;padding-left:1.25rem;line-height:2">
+          <li data-i18n="lia.info_1">Supplier invoices due within 12 months</li>
+          <li data-i18n="lia.info_2">Tax liabilities (VAT, IS) due this year</li>
+          <li data-i18n="lia.info_3">Bank overdrafts and short-term loans</li>
+          <li data-i18n="lia.info_4">Salaries and wages payable</li>
+        </ul>
+        <p style="font-size:12px;color:#8A7F73;margin-top:.75rem;font-style:italic;" data-i18n="lia.info_note">Long-term debt treatment differs by madhab.</p>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn-secondary" onclick="goTo(1)" data-i18n="lia.back">← Back</button>
+        <button class="btn-primary" onclick="calculate()" data-i18n="lia.calc">Calculate Zakat →</button>
+      </div>
+    </div>
+
+    <!-- ========== SCREEN 3: RESULT ========== -->
+    <div class="screen" id="screen-3">
+      <div class="result-hero" id="result-hero">
+        <div class="result-label"><span data-i18n="res.label_prefix">Zakat due for</span> <span id="res-year"></span></div>
+        <div class="status-badge status-due" id="status-badge" data-i18n="res.due">Zakat is obligatory</div>
+        <div class="result-amount" id="result-amount">0.00</div>
+        <div class="result-sub" id="result-sub" data-i18n="res.sub_default">2.5% of net zakatable wealth</div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-lbl" data-i18n="res.total_assets">Total assets</div><div class="stat-val" id="res-assets">—</div></div>
+        <div class="stat"><div class="stat-lbl" data-i18n="res.liabilities">Liabilities</div><div class="stat-val" id="res-liab">—</div></div>
+        <div class="stat"><div class="stat-lbl" data-i18n="res.net_wealth">Net wealth</div><div class="stat-val" id="res-net">—</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="icon">📊</div> <span data-i18n="res.breakdown_title">Detailed breakdown</span></div>
+        <table class="breakdown-table" id="breakdown-table"></table>
+      </div>
+
+      <div class="disclaimer">
+        <strong data-i18n="res.note_label">Scholarly note:</strong>
+        <span data-i18n="res.note_text">This calculation follows mainstream Sunni fiqh — 2.5% on net zakatable assets held above nisab for one complete lunar year (hawl). Nisab basis:</span>
+        <span id="res-nisab-basis">silver</span>.
+      </div>
+
+      <div class="action-btns">
+        <button class="btn-secondary" onclick="goTo('dashboard')" data-i18n="res.back">← Dashboard</button>
+        <button class="btn-primary" onclick="window.print()" data-i18n="res.print">Print / Save PDF</button>
+      </div>
+    </div>
+
   </div>
 
-  <!-- ============ DASHBOARD SCREEN ============ -->
-  <div class="screen" id="screen-dashboard">
-    <div class="dash-header">
-      <div>
-        <span class="dash-greeting">Welcome,</span>
-        <span class="dash-name" id="dash-name"></span>
-      </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn-secondary btn-sm" onclick="importBusiness()" title="Import data">&#8593; Import</button>
-        <button class="btn-secondary btn-sm" onclick="handleLogout()">Sign Out</button>
-      </div>
-    </div>
-
-    <div class="dash-title-row">
-      <h2>Your Businesses</h2>
-      <button class="btn-primary btn-sm" onclick="showNewBizForm()">+ New Business</button>
-    </div>
-
-    <div class="new-biz-card" id="new-biz-card" style="display:none">
-      <div class="card-title"><div class="icon">+</div> New business</div>
-      <div class="field">
-        <label>Business name</label>
-        <input type="text" id="new-biz-name" placeholder="e.g. Al-Amin Trading LLC" onkeydown="if(event.key==='Enter')confirmNewBusiness()" />
-      </div>
-      <div style="display:flex;gap:8px;margin-top:.5rem">
-        <button class="btn-primary btn-sm" onclick="confirmNewBusiness()">Create</button>
-        <button class="btn-secondary btn-sm" onclick="cancelNewBusiness()">Cancel</button>
-      </div>
-    </div>
-
-    <div class="biz-grid" id="biz-grid"></div>
-
-    <div class="empty-state" id="empty-state" style="display:none">
-      <div class="empty-icon">&#128200;</div>
-      <h3>No businesses yet</h3>
-      <p>Create your first business profile to start calculating zakat.</p>
-      <button class="btn-primary btn-sm" onclick="showNewBizForm()">+ Create Business</button>
-    </div>
-
-    <div class="disclaimer" style="margin-top:2rem">
-      <strong>Data storage notice:</strong> All data is stored in your browser locally. Use the export button on each business to back up your data as a file. Clearing browser data will permanently erase all accounts and business records.
-    </div>
-  </div>
-
-  <!-- ============ STEP INDICATOR ============ -->
-  <div class="steps">
-    <button class="step active" onclick="goTo(0)" id="step0"><span class="step-num">Step 1</span>Settings</button>
-    <button class="step" onclick="goTo(1)" id="step1"><span class="step-num">Step 2</span>Assets</button>
-    <button class="step" onclick="goTo(2)" id="step2"><span class="step-num">Step 3</span>Liabilities</button>
-    <button class="step" onclick="goTo(3)" id="step3"><span class="step-num">Step 4</span>Result</button>
-  </div>
-
-  <!-- ============ SCREEN 0: SETTINGS ============ -->
-  <div class="screen" id="screen-0">
-    <div class="card">
-      <div class="card-title"><div class="icon">&#9881;</div> Calculation settings</div>
-
-      <div class="field-row">
-        <div class="field">
-          <label>Currency</label>
-          <select id="currency" onchange="onCurrencyChange();scheduleSave()">
-            <option value="MAD">MAD – Moroccan Dirham</option>
-            <option value="USD">USD – US Dollar</option>
-            <option value="EUR">EUR – Euro</option>
-            <option value="GBP">GBP – British Pound</option>
-            <option value="SAR">SAR – Saudi Riyal</option>
-            <option value="AED">AED – UAE Dirham</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Zakat anniversary (hawl) date</label>
-          <input type="date" id="hawl-date" onchange="scheduleSave()" />
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Nisab basis</label>
-        <div class="pill-group" id="nisab-toggle">
-          <button class="pill active" onclick="setNisab('silver',this)">Silver (612.36g) — recommended</button>
-          <button class="pill" onclick="setNisab('gold',this)">Gold (87.48g)</button>
-        </div>
-        <div class="field-hint">Silver nisab is lower and benefits more zakat recipients. Most contemporary scholars recommend silver for business zakat.</div>
-      </div>
-
-      <div class="field">
-        <label>Current nisab value in your currency</label>
-        <input type="number" id="nisab-val" min="0" step="1" oninput="scheduleSave()" />
-        <div class="field-hint" id="nisab-hint">Update with today's live precious metal price. Approximate values are pre-filled.</div>
-      </div>
-
-      <div class="field">
-        <label>Fiqh / madhab preference</label>
-        <select id="madhab" onchange="scheduleSave()">
-          <option value="general">General (mainstream Sunni — recommended)</option>
-          <option value="hanafi">Hanafi</option>
-          <option value="maliki">Maliki</option>
-          <option value="shafi">Shafi'i</option>
-          <option value="hanbali">Hanbali</option>
-        </select>
-        <div class="field-hint">Note: Calculation logic for specific madhab differences is not yet implemented. Consult a scholar for madhab-specific rulings.</div>
-      </div>
-
-      <div class="field">
-        <label>Business / entity name</label>
-        <input type="text" id="biz-name" placeholder="e.g. Al-Amin Trading LLC" oninput="scheduleSave()" />
-      </div>
-    </div>
-
-    <div class="nav-row">
-      <button class="btn-secondary" onclick="goTo('dashboard')">&#8592; Dashboard</button>
-      <button class="btn-primary" onclick="goTo(1)">Next: Enter Assets &#8594;</button>
-    </div>
-  </div>
-
-  <!-- ============ SCREEN 1: ASSETS ============ -->
-  <div class="screen" id="screen-1">
-    <div class="card">
-      <div class="card-title"><div class="icon">&#128176;</div> Zakatable assets</div>
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:1.25rem;">Include all liquid assets held for one full lunar year. Fixed assets like premises and equipment are excluded.</p>
-
-      <div class="asset-section">
-        <div class="asset-section-label">
-          Cash & bank balances
-          <span class="asset-section-total" id="total-cash">0.00</span>
-        </div>
-        <div id="cash-rows">
-          <div class="asset-row">
-            <input type="text" placeholder="Account / description" oninput="scheduleSave()" />
-            <input type="number" placeholder="0.00" min="0" step="0.01" class="cash-amt" oninput="updateTotals()" />
-            <button class="remove-btn" onclick="removeRow(this)" aria-label="Remove row">&times;</button>
-          </div>
-        </div>
-        <button class="add-btn" onclick="addAssetRow('cash-rows','cash-amt')">+ Add bank account or cash balance</button>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="asset-section">
-        <div class="asset-section-label">
-          Trade receivables (collectible within hawl)
-          <span class="asset-section-total" id="total-recv">0.00</span>
-        </div>
-        <div id="recv-rows">
-          <div class="asset-row">
-            <input type="text" placeholder="Client / invoice" oninput="scheduleSave()" />
-            <input type="number" placeholder="0.00" min="0" step="0.01" class="recv-amt" oninput="updateTotals()" />
-            <button class="remove-btn" onclick="removeRow(this)" aria-label="Remove row">&times;</button>
-          </div>
-        </div>
-        <button class="add-btn" onclick="addAssetRow('recv-rows','recv-amt')">+ Add receivable</button>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="asset-section">
-        <div class="asset-section-label">
-          Inventory / stock for resale (at current market value)
-          <span class="asset-section-total" id="total-inv">0.00</span>
-        </div>
-        <div id="inv-rows">
-          <div class="asset-row">
-            <input type="text" placeholder="Item / category" oninput="scheduleSave()" />
-            <input type="number" placeholder="0.00" min="0" step="0.01" class="inv-amt" oninput="updateTotals()" />
-            <button class="remove-btn" onclick="removeRow(this)" aria-label="Remove row">&times;</button>
-          </div>
-        </div>
-        <button class="add-btn" onclick="addAssetRow('inv-rows','inv-amt')">+ Add inventory line</button>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="asset-section">
-        <div class="asset-section-label">
-          Other liquid assets (investments, crypto, stocks)
-          <span class="asset-section-total" id="total-other">0.00</span>
-        </div>
-        <div id="other-rows">
-          <div class="asset-row">
-            <input type="text" placeholder="Description" oninput="scheduleSave()" />
-            <input type="number" placeholder="0.00" min="0" step="0.01" class="other-amt" oninput="updateTotals()" />
-            <button class="remove-btn" onclick="removeRow(this)" aria-label="Remove row">&times;</button>
-          </div>
-        </div>
-        <button class="add-btn" onclick="addAssetRow('other-rows','other-amt')">+ Add liquid asset</button>
-      </div>
-
-      <div class="divider"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0">
-        <span style="font-size:14px;font-weight:500;color:var(--ink)">Total zakatable assets</span>
-        <span style="font-size:18px;font-weight:500;color:var(--ink);font-family:'Playfair Display',serif" id="total-assets-display">0.00</span>
-      </div>
-    </div>
-
-    <div class="nav-row">
-      <button class="btn-secondary" onclick="goTo(0)">&larr; Back</button>
-      <button class="btn-primary" onclick="goTo(2)">Next: Liabilities &rarr;</button>
-    </div>
-  </div>
-
-  <!-- ============ SCREEN 2: LIABILITIES ============ -->
-  <div class="screen" id="screen-2">
-    <div class="card">
-      <div class="card-title"><div class="icon">&#128203;</div> Deductible liabilities</div>
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:1.25rem;">Deduct short-term debts, taxes owed, and bills due within the year. Long-term loan principal treatment varies by madhab.</p>
-
-      <div class="asset-section">
-        <div class="asset-section-label">
-          Short-term debts & payables
-          <span class="asset-section-total" id="total-liab">0.00</span>
-        </div>
-        <div id="liab-rows">
-          <div class="asset-row">
-            <input type="text" placeholder="Creditor / description" oninput="scheduleSave()" />
-            <input type="number" placeholder="0.00" min="0" step="0.01" class="liab-amt" oninput="updateTotals()" />
-            <button class="remove-btn" onclick="removeRow(this)" aria-label="Remove row">&times;</button>
-          </div>
-        </div>
-        <button class="add-btn" onclick="addAssetRow('liab-rows','liab-amt')">+ Add liability</button>
-      </div>
-
-      <div class="divider"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0">
-        <span style="font-size:14px;font-weight:500;color:var(--ink)">Net zakatable wealth</span>
-        <span style="font-size:18px;font-weight:500;font-family:'Playfair Display',serif" id="net-display">0.00</span>
-      </div>
-    </div>
-
-    <div class="card" style="background:var(--parchment-mid);border-style:dashed;">
-      <div class="card-title"><div class="icon">&#8505;</div> What to include</div>
-      <ul style="font-size:13px;color:var(--text-muted);padding-left:1.25rem;line-height:2">
-        <li>Supplier invoices due within 12 months</li>
-        <li>Tax liabilities (VAT, corporate tax) due this year</li>
-        <li>Bank overdrafts and short-term loans</li>
-        <li>Salaries and wages payable</li>
-      </ul>
-      <p style="font-size:12px;color:var(--text-muted);margin-top:.75rem;font-style:italic;">Long-term debt treatment differs by madhab. Verify with a scholar for your specific case.</p>
-    </div>
-
-    <div class="nav-row">
-      <button class="btn-secondary" onclick="goTo(1)">&larr; Back</button>
-      <button class="btn-primary" onclick="calculate()">Calculate Zakat &rarr;</button>
-    </div>
-  </div>
-
-  <!-- ============ SCREEN 3: RESULT ============ -->
-  <div class="screen" id="screen-3">
-    <div class="result-hero" id="result-hero">
-      <div class="result-label">Zakat due for <span id="res-year"></span></div>
-      <div class="status-badge status-due" id="status-badge">Zakat is obligatory</div>
-      <div class="result-amount" id="result-amount">0.00</div>
-      <div class="result-sub" id="result-sub">2.5% of net zakatable wealth</div>
-    </div>
-
-    <div class="stat-grid">
-      <div class="stat"><div class="stat-lbl">Total assets</div><div class="stat-val" id="res-assets">&mdash;</div></div>
-      <div class="stat"><div class="stat-lbl">Liabilities</div><div class="stat-val" id="res-liab">&mdash;</div></div>
-      <div class="stat"><div class="stat-lbl">Net wealth</div><div class="stat-val" id="res-net">&mdash;</div></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><div class="icon">&#128202;</div> Detailed breakdown</div>
-      <table class="breakdown-table" id="breakdown-table"></table>
-    </div>
-
-    <div class="disclaimer">
-      <strong>Scholarly note:</strong> This calculation follows mainstream Sunni fiqh &mdash; 2.5% (1/40th) on net zakatable assets held above nisab for one complete lunar year (hawl). Nisab basis: <span id="res-nisab-basis">silver</span>. Madhab-specific differences (especially regarding long-term debt) are not yet implemented. For contested cases or complex ownership structures, consult a qualified Islamic scholar or certified zakat institution.
-    </div>
-
-    <div class="action-btns">
-      <button class="btn-secondary" onclick="goTo('dashboard')">&larr; Dashboard</button>
-      <button class="btn-primary" onclick="window.print()">Print / Save PDF</button>
-    </div>
-  </div>
-
-</div>
-
-<footer>
-  For guidance only &mdash; not a fatwa. Consult a qualified scholar for your specific situation.
-  &nbsp;&middot;&nbsp; Calculations follow AAOIFI and mainstream Sunni fiqh standards.
-</footer>
-
-<div class="toast" id="toast"></div>
-<div class="save-indicator" id="save-indicator">Saved</div>
-
-<script>
-/* =============================================
-   STATE & CONSTANTS
-   ============================================= */
-let nisabBasis = 'silver';
-let currentUser = null;
-let currentBiz = null;
-let saveTimeout = null;
-let openMenuId = null;
-
-const NISAB_PRESETS = {
-  silver: { MAD: 4800, USD: 475, EUR: 430, GBP: 370, SAR: 1780, AED: 1745 },
-  gold:   { MAD: 62000, USD: 6200, EUR: 5600, GBP: 4900, SAR: 23250, AED: 22750 }
-};
-
-/* =============================================
-   LOCAL STORAGE HELPERS
-   ============================================= */
-function lsGet(key) {
-  try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
-}
-function lsSet(key, val) {
-  try { localStorage.setItem(key, JSON.stringify(val)); }
-  catch(e) { showToast('Storage full — could not save'); }
-}
-
-/* =============================================
-   SIMPLE HASH (not cryptographically secure)
-   ============================================= */
-function simpleHash(str) {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = ((h << 5) - h) + str.charCodeAt(i);
-    h = h & h;
-  }
-  return 'h_' + Math.abs(h).toString(36);
-}
-
-/* =============================================
-   FORMAT HELPERS
-   ============================================= */
-function fmt(n, cur) {
-  const c = cur || document.getElementById('currency').value;
-  try {
-    return new Intl.NumberFormat('en-US', { style:'currency', currency:c, maximumFractionDigits:2 }).format(n);
-  } catch {
-    return c + ' ' + n.toFixed(2);
-  }
-}
-
-function escapeHtml(str) {
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
-}
-
-function formatDate(iso) {
-  if (!iso) return '—';
-  try {
-    return new Date(iso).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
-  } catch { return '—'; }
-}
-
-/* =============================================
-   TOAST & SAVE INDICATOR
-   ============================================= */
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2500);
-}
-
-function showSaveIndicator() {
-  const el = document.getElementById('save-indicator');
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 1500);
-}
-
-/* =============================================
-   AUTH
-   ============================================= */
-function showAuthTab(tab) {
-  document.querySelectorAll('.auth-tab').forEach((t,i) => {
-    t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
-  });
-  document.getElementById('auth-login').classList.toggle('active', tab === 'login');
-  document.getElementById('auth-register').classList.toggle('active', tab === 'register');
-  hideAuthErrors();
-}
-
-function hideAuthErrors() {
-  document.getElementById('login-error').classList.remove('show');
-  document.getElementById('reg-error').classList.remove('show');
-}
-
-function showAuthError(id, msg) {
-  const el = document.getElementById(id);
-  el.textContent = msg;
-  el.classList.add('show');
-}
-
-function handleRegister() {
-  hideAuthErrors();
-  const name = document.getElementById('reg-name').value.trim();
-  const email = document.getElementById('reg-email').value.trim().toLowerCase();
-  const pass = document.getElementById('reg-password').value;
-  const confirm = document.getElementById('reg-confirm').value;
-
-  if (!name) return showAuthError('reg-error', 'Please enter your name.');
-  if (!email || !email.includes('@')) return showAuthError('reg-error', 'Please enter a valid email.');
-  if (pass.length < 6) return showAuthError('reg-error', 'Password must be at least 6 characters.');
-  if (pass !== confirm) return showAuthError('reg-error', 'Passwords do not match.');
-
-  const users = lsGet('zakat_users') || {};
-  if (users[email]) return showAuthError('reg-error', 'An account with this email already exists.');
-
-  users[email] = {
-    name: name,
-    email: email,
-    passwordHash: simpleHash(pass),
-    businesses: [],
-    createdAt: new Date().toISOString()
-  };
-  lsSet('zakat_users', users);
-  lsSet('zakat_session', { email: email });
-
-  currentUser = email;
-  document.getElementById('dash-name').textContent = name;
-  goTo('dashboard');
-  showToast('Account created successfully');
-}
-
-function handleLogin() {
-  hideAuthErrors();
-  const email = document.getElementById('login-email').value.trim().toLowerCase();
-  const pass = document.getElementById('login-password').value;
-
-  if (!email) return showAuthError('login-error', 'Please enter your email.');
-  if (!pass) return showAuthError('login-error', 'Please enter your password.');
-
-  const users = lsGet('zakat_users') || {};
-  const user = users[email];
-  if (!user) return showAuthError('login-error', 'No account found with this email.');
-  if (user.passwordHash !== simpleHash(pass)) return showAuthError('login-error', 'Incorrect password.');
-
-  lsSet('zakat_session', { email: email });
-  currentUser = email;
-  currentBiz = null;
-  document.getElementById('dash-name').textContent = user.name;
-  goTo('dashboard');
-}
-
-function handleLogout() {
-  localStorage.removeItem('zakat_session');
-  currentUser = null;
-  currentBiz = null;
-  // Clear form fields
-  document.getElementById('login-email').value = '';
-  document.getElementById('login-password').value = '';
-  showAuthTab('login');
-  goTo('auth');
-}
-
-/* =============================================
-   DASHBOARD
-   ============================================= */
-function getBusinesses() {
-  if (!currentUser) return [];
-  const users = lsGet('zakat_users') || {};
-  return (users[currentUser] && users[currentUser].businesses) || [];
-}
-
-function saveBusinesses(businesses) {
-  const users = lsGet('zakat_users') || {};
-  if (users[currentUser]) {
-    users[currentUser].businesses = businesses;
-    lsSet('zakat_users', users);
-  }
-}
-
-function renderDashboard() {
-  const businesses = getBusinesses();
-  const grid = document.getElementById('biz-grid');
-  const empty = document.getElementById('empty-state');
-
-  if (businesses.length === 0) {
-    grid.style.display = 'none';
-    empty.style.display = 'block';
-    return;
-  }
-
-  grid.style.display = 'grid';
-  empty.style.display = 'none';
-
-  grid.innerHTML = businesses.map(biz => {
-    const status = getBizStatus(biz);
-    const net = getBizNetAssets(biz);
-    const dotClass = status === 'due' ? 'due' : 'pending';
-    const dotHtml = status !== 'empty' ? `<span class="biz-status-dot ${dotClass}"></span>` : '';
-    return `
-      <div class="biz-card" data-biz-id="${biz.id}" onclick="openBusiness('${biz.id}')">
-        <div class="biz-card-header">
-          <div class="biz-card-name">${dotHtml}${escapeHtml(biz.name)}</div>
-          <div class="biz-card-menu">
-            <button class="biz-menu-btn" onclick="event.stopPropagation();toggleBizMenu('${biz.id}')" aria-label="Options">&#8943;</button>
-          </div>
-          <div class="biz-card-actions" id="menu-${biz.id}">
-            <button class="biz-action-item" onclick="event.stopPropagation();exportBusiness('${biz.id}')">Export data</button>
-            <button class="biz-action-item danger" onclick="event.stopPropagation();deleteBusiness('${biz.id}')">Delete business</button>
-          </div>
-        </div>
-        <div class="biz-card-date">Modified ${formatDate(biz.lastModified)}</div>
-        <div class="biz-card-stats">
-          <div>
-            <span class="biz-stat-label">Net assets</span>
-            <span class="biz-stat-val">${fmt(net, biz.data.currency)}</span>
-          </div>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-function getBizStatus(biz) {
-  const net = getBizNetAssets(biz);
-  const nisab = parseFloat(biz.data.nisabVal) || 0;
-  const hasData = biz.data.cashRows.some(r => parseFloat(r.amount) > 0) ||
-                  biz.data.recvRows.some(r => parseFloat(r.amount) > 0) ||
-                  biz.data.invRows.some(r => parseFloat(r.amount) > 0) ||
-                  biz.data.otherRows.some(r => parseFloat(r.amount) > 0);
-  if (!hasData) return 'empty';
-  if (nisab > 0 && net >= nisab) return 'due';
-  return 'pending';
-}
-
-function getBizNetAssets(biz) {
-  const sum = (arr) => arr.reduce((a, r) => a + (parseFloat(r.amount) || 0), 0);
-  const assets = sum(biz.data.cashRows) + sum(biz.data.recvRows) + sum(biz.data.invRows) + sum(biz.data.otherRows);
-  const liab = sum(biz.data.liabRows);
-  return Math.max(0, assets - liab);
-}
-
-function toggleBizMenu(id) {
-  // Close any open menu first
-  document.querySelectorAll('.biz-card-actions.open').forEach(m => m.classList.remove('open'));
-  const menu = document.getElementById('menu-' + id);
-  if (openMenuId === id) {
-    openMenuId = null;
-  } else {
-    menu.classList.add('open');
-    openMenuId = id;
-  }
-}
-
-// Close menus on outside click
-document.addEventListener('click', () => {
-  document.querySelectorAll('.biz-card-actions.open').forEach(m => m.classList.remove('open'));
-  openMenuId = null;
-});
-
-function showNewBizForm() {
-  document.getElementById('new-biz-card').style.display = 'block';
-  document.getElementById('new-biz-name').value = '';
-  document.getElementById('new-biz-name').focus();
-}
-
-function cancelNewBusiness() {
-  document.getElementById('new-biz-card').style.display = 'none';
-}
-
-function confirmNewBusiness() {
-  const input = document.getElementById('new-biz-name');
-  const name = input.value.trim();
-  if (!name) {
-    input.classList.add('error-border');
-    input.focus();
-    setTimeout(() => input.classList.remove('error-border'), 2000);
-    return;
-  }
-
-  const biz = {
-    id: 'biz_' + Date.now(),
-    name: name,
-    createdAt: new Date().toISOString(),
-    lastModified: new Date().toISOString(),
-    data: {
-      currency: 'MAD',
-      hawlDate: new Date().toISOString().slice(0, 10),
-      nisabBasis: 'silver',
-      nisabVal: NISAB_PRESETS.silver.MAD.toString(),
-      madhab: 'general',
-      bizName: name,
-      cashRows: [{ desc: '', amount: '' }],
-      recvRows: [{ desc: '', amount: '' }],
-      invRows: [{ desc: '', amount: '' }],
-      otherRows: [{ desc: '', amount: '' }],
-      liabRows: [{ desc: '', amount: '' }]
-    }
-  };
-
-  const businesses = getBusinesses();
-  businesses.push(biz);
-  saveBusinesses(businesses);
-
-  cancelNewBusiness();
-  currentBiz = biz;
-  loadBusinessData(biz.data);
-  goTo(0);
-  showToast('Business created');
-}
-
-function openBusiness(id) {
-  const businesses = getBusinesses();
-  const biz = businesses.find(b => b.id === id);
-  if (!biz) return;
-  currentBiz = biz;
-  loadBusinessData(biz.data);
-  goTo(0);
-}
-
-function deleteBusiness(id) {
-  const businesses = getBusinesses();
-  const idx = businesses.findIndex(b => b.id === id);
-  if (idx === -1) return;
-
-  const card = document.querySelector(`[data-biz-id="${id}"]`);
-  const btn = card ? card.querySelector('.biz-action-item.danger') : null;
-
-  if (card && card.dataset.confirming === 'true') {
-    // Actually delete
-    businesses.splice(idx, 1);
-    saveBusinesses(businesses);
-    if (currentBiz && currentBiz.id === id) currentBiz = null;
-    renderDashboard();
-    showToast('Business deleted');
-  } else {
-    // First click — ask for confirmation
-    if (card) card.dataset.confirming = 'true';
-    if (btn) btn.textContent = 'Click again to confirm';
-    setTimeout(() => {
-      if (card) card.dataset.confirming = 'false';
-      if (btn) btn.textContent = 'Delete business';
-    }, 3000);
-  }
-}
-
-function exportBusiness(id) {
-  const businesses = getBusinesses();
-  const biz = businesses.find(b => b.id === id);
-  if (!biz) return;
-  const blob = new Blob([JSON.stringify(biz, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = (biz.name || 'business').replace(/\s+/g, '_') + '_zakat.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('Data exported');
-}
-
-function importBusiness() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-  input.onchange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      try {
-        const biz = JSON.parse(ev.target.result);
-        if (!biz.name || !biz.data) throw new Error('Invalid');
-        // Ensure it has all required fields
-        const defaults = {
-          cashRows: [{ desc:'', amount:'' }],
-          recvRows: [{ desc:'', amount:'' }],
-          invRows: [{ desc:'', amount:'' }],
-          otherRows: [{ desc:'', amount:'' }],
-          liabRows: [{ desc:'', amount:'' }]
-        };
-        biz.data = Object.assign({}, defaults, biz.data);
-        biz.id = 'biz_' + Date.now();
-        biz.lastModified = new Date().toISOString();
-        const businesses = getBusinesses();
-        businesses.push(biz);
-        saveBusinesses(businesses);
-        renderDashboard();
-        showToast('Business imported');
-      } catch {
-        showToast('Invalid file format');
-      }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-}
-
-/* =============================================
-   BUSINESS DATA — SAVE / LOAD
-   ============================================= */
-function getRowsData(containerId) {
-  return Array.from(document.querySelectorAll(`#${containerId} .asset-row`)).map(row => {
-    const inputs = row.querySelectorAll('input');
-    return { desc: inputs[0].value, amount: inputs[1].value };
-  });
-}
-
-function serializeBusiness() {
-  return {
-    currency: document.getElementById('currency').value,
-    hawlDate: document.getElementById('hawl-date').value,
-    nisabBasis: nisabBasis,
-    nisabVal: document.getElementById('nisab-val').value,
-    madhab: document.getElementById('madhab').value,
-    bizName: document.getElementById('biz-name').value,
-    cashRows: getRowsData('cash-rows'),
-    recvRows: getRowsData('recv-rows'),
-    invRows: getRowsData('inv-rows'),
-    otherRows: getRowsData('other-rows'),
-    liabRows: getRowsData('liab-rows')
-  };
-}
-
-function saveCurrentBusiness() {
-  if (!currentUser || !currentBiz) return;
-  const data = serializeBusiness();
-  const businesses = getBusinesses();
-  const idx = businesses.findIndex(b => b.id === currentBiz.id);
-  if (idx !== -1) {
-    businesses[idx].data = data;
-    businesses[idx].name = data.bizName || businesses[idx].name;
-    businesses[idx].lastModified = new Date().toISOString();
-    saveBusinesses(businesses);
-    currentBiz = businesses[idx];
-  }
-}
-
-function scheduleSave() {
-  clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(() => {
-    saveCurrentBusiness();
-    showSaveIndicator();
-  }, 800);
-}
-
-function rebuildRows(containerId, cls, rowsData) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = '';
-  const count = Math.max(1, (rowsData && rowsData.length) || 0);
-  for (let i = 0; i < count; i++) {
-    addAssetRow(containerId, cls);
-    if (rowsData && rowsData[i]) {
-      const lastRow = container.lastElementChild;
-      const inputs = lastRow.querySelectorAll('input');
-      inputs[0].value = rowsData[i].desc || '';
-      inputs[1].value = rowsData[i].amount || '';
-    }
-  }
-}
-
-function loadBusinessData(data) {
-  document.getElementById('currency').value = data.currency || 'MAD';
-  document.getElementById('hawl-date').value = data.hawlDate || new Date().toISOString().slice(0,10);
-  document.getElementById('nisab-val').value = data.nisabVal || '';
-  document.getElementById('madhab').value = data.madhab || 'general';
-  document.getElementById('biz-name').value = data.bizName || '';
-
-  // Set nisab basis
-  nisabBasis = data.nisabBasis || 'silver';
-  document.querySelectorAll('#nisab-toggle .pill').forEach((b,i) => {
-    b.classList.toggle('active', (nisabBasis === 'silver' && i === 0) || (nisabBasis === 'gold' && i === 1));
-  });
-
-  rebuildRows('cash-rows', 'cash-amt', data.cashRows);
-  rebuildRows('recv-rows', 'recv-amt', data.recvRows);
-  rebuildRows('inv-rows', 'inv-amt', data.invRows);
-  rebuildRows('other-rows', 'other-amt', data.otherRows);
-  rebuildRows('liab-rows', 'liab-amt', data.liabRows);
-
-  updateTotals();
-}
-
-/* =============================================
-   CALCULATOR LOGIC
-   ============================================= */
-function sumClass(cls) {
-  return Array.from(document.querySelectorAll('.' + cls))
-    .reduce((acc, el) => acc + (Math.max(0, parseFloat(el.value)) || 0), 0);
-}
-
-function setNisab(val, btn) {
-  nisabBasis = val;
-  document.querySelectorAll('#nisab-toggle .pill').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const cur = document.getElementById('currency').value;
-  document.getElementById('nisab-val').value = NISAB_PRESETS[val][cur] || '';
-  scheduleSave();
-}
-
-function onCurrencyChange() {
-  const activeBtn = document.querySelector('#nisab-toggle .pill.active');
-  if (activeBtn) {
-    const cur = document.getElementById('currency').value;
-    document.getElementById('nisab-val').value = NISAB_PRESETS[nisabBasis][cur] || '';
-  }
-  updateTotals();
-}
-
-function updateTotals() {
-  const cur = document.getElementById('currency').value;
-  const cash = sumClass('cash-amt');
-  const recv = sumClass('recv-amt');
-  const inv  = sumClass('inv-amt');
-  const other= sumClass('other-amt');
-  const liab = sumClass('liab-amt');
-  const total = cash + recv + inv + other;
-  const net   = Math.max(0, total - liab);
-
-  const f = n => fmt(n, cur);
-  const setT = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = f(v); };
-
-  setT('total-cash', cash);
-  setT('total-recv', recv);
-  setT('total-inv',  inv);
-  setT('total-other',other);
-  setT('total-assets-display', total);
-  setT('total-liab', liab);
-
-  const netEl = document.getElementById('net-display');
-  if (netEl) {
-    netEl.textContent = f(net);
-    netEl.style.color = net > 0 ? 'var(--ink)' : 'var(--text-muted)';
-  }
-}
-
-function addAssetRow(containerId, cls) {
-  const c = document.getElementById(containerId);
-  const div = document.createElement('div');
-  div.className = 'asset-row';
-  div.innerHTML = `
-    <input type="text" placeholder="Description" oninput="scheduleSave()" />
-    <input type="number" placeholder="0.00" min="0" step="0.01" class="${cls}" oninput="updateTotals()" />
-    <button class="remove-btn" onclick="removeRow(this)" aria-label="Remove row">&times;</button>`;
-  c.appendChild(div);
-}
-
-function removeRow(btn) {
-  const row = btn.parentElement;
-  const container = row.parentElement;
-  if (container.children.length > 1) {
-    row.remove();
-    updateTotals();
-    scheduleSave();
-  } else {
-    const inputs = row.querySelectorAll('input');
-    inputs.forEach(i => i.value = '');
-    updateTotals();
-    scheduleSave();
-  }
-}
-
-function calculate() {
-  const cur = document.getElementById('currency').value;
-  const cash  = sumClass('cash-amt');
-  const recv  = sumClass('recv-amt');
-  const inv   = sumClass('inv-amt');
-  const other = sumClass('other-amt');
-  const liab  = sumClass('liab-amt');
-  const totalAssets = cash + recv + inv + other;
-  const net   = Math.max(0, totalAssets - liab);
-  const nisab = parseFloat(document.getElementById('nisab-val').value) || 0;
-  const zakatDue = (net >= nisab && nisab > 0) ? net * 0.025 : 0;
-  const biz = document.getElementById('biz-name').value || 'Your Business';
-  const hawl = document.getElementById('hawl-date').value || new Date().toISOString().slice(0,10);
-  const yr = new Date(hawl).getFullYear();
-
-  document.getElementById('res-year').textContent = biz + ' \u2014 ' + yr;
-  document.getElementById('res-assets').textContent = fmt(totalAssets, cur);
-  document.getElementById('res-liab').textContent   = fmt(liab, cur);
-  document.getElementById('res-net').textContent    = fmt(net, cur);
-  document.getElementById('res-nisab-basis').textContent = nisabBasis;
-  document.getElementById('result-amount').textContent = fmt(zakatDue, cur);
-
-  const badge = document.getElementById('status-badge');
-  const sub   = document.getElementById('result-sub');
-  if (nisab === 0) {
-    badge.className = 'status-badge status-none';
-    badge.textContent = 'Set nisab to calculate';
-    sub.textContent = 'Return to settings and enter nisab value';
-    document.getElementById('result-amount').textContent = fmt(0, cur);
-  } else if (net < nisab) {
-    badge.className = 'status-badge status-none';
-    badge.textContent = 'Below nisab \u2014 no zakat due';
-    sub.textContent = `Net wealth (${fmt(net,cur)}) is below nisab (${fmt(nisab,cur)})`;
-    document.getElementById('result-amount').textContent = fmt(0, cur);
-  } else {
-    badge.className = 'status-badge status-due';
-    badge.textContent = 'Zakat is obligatory';
-    sub.textContent = fmt(net,cur) + ' \u00D7 2.5% \u2014 hawl completed';
-  }
-
-  const rows = [
-    ['Cash & bank balances', fmt(cash,cur), false],
-    ['Trade receivables', fmt(recv,cur), false],
-    ['Inventory (market value)', fmt(inv,cur), false],
-    ['Other liquid assets', fmt(other,cur), false],
-    ['\u2500', '', false],
-    ['Total zakatable assets', fmt(totalAssets,cur), true],
-    ['Less: liabilities', '\u2212' + fmt(liab,cur), false],
-    ['Net zakatable wealth', fmt(net,cur), true],
-    ['Nisab threshold (' + nisabBasis + ')', fmt(nisab,cur), false],
-  ];
-  if (net >= nisab && nisab > 0) {
-    rows.push(['Zakat due (2.5%)', fmt(zakatDue,cur), 'zakat']);
-  }
-
-  document.getElementById('breakdown-table').innerHTML = rows.map(([l,v,bold]) => {
-    if (l === '\u2500') return '<tr><td colspan="2" style="padding:4px 0;border-bottom:none"><hr style="border:none;border-top:1px solid var(--parchment-dark)"/></td></tr>';
-    const cls = bold === 'zakat' ? 'zakat-row' : bold ? 'total-row' : 'subtotal';
-    return `<tr class="${cls}"><td>${l}</td><td>${v}</td></tr>`;
-  }).join('');
-
-  goTo(3);
-}
-
-/* =============================================
-   NAVIGATION
-   ============================================= */
-function goTo(screen) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-
-  if (screen === 'auth') {
-    document.getElementById('screen-auth').classList.add('active');
-    document.body.className = 'on-auth';
-  } else if (screen === 'dashboard') {
-    document.getElementById('screen-dashboard').classList.add('active');
-    document.body.className = 'on-dashboard';
-    renderDashboard();
-  } else {
-    document.getElementById('screen-' + screen).classList.add('active');
-    document.body.className = 'on-calc';
-    document.querySelectorAll('.step').forEach((s,i) => {
-      s.classList.toggle('active', i === screen);
-      s.classList.toggle('done', i < screen);
-    });
-  }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-/* =============================================
-   INIT
-   ============================================= */
-(function init() {
-  // Check for existing session
-  const session = lsGet('zakat_session');
-  if (session && session.email) {
-    const users = lsGet('zakat_users') || {};
-    const user = users[session.email];
-    if (user) {
-      currentUser = session.email;
-      document.getElementById('dash-name').textContent = user.name;
-      goTo('dashboard');
-      return;
-    }
-  }
-  // No session — show auth
-  goTo('auth');
-})();
-</script>
+  <footer>
+    <span data-i18n="footer.text">For guidance only — not a fatwa. Consult a qualified scholar for your specific situation. · Calculations follow AAOIFI and mainstream Sunni fiqh standards.</span>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+  <div class="save-indicator" id="save-indicator">Saved</div>
+
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
