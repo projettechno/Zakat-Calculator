@@ -1,21 +1,16 @@
 /* =============================================
    ZAKAT CALCULATOR — APPLICATION LOGIC
-   Morocco-focused business zakat portal
-   All data stored in localStorage
+   Morocco-focused, trilingual (FR/AR/EN)
    ============================================= */
-
-// ---- Constants ----
 
 var CURRENCY = 'MAD';
 
 var NISAB_PRESETS = {
-  silver: 6500,   // 612.36g silver — approximate 2025 value in MAD
-  gold:   67500   // 87.48g gold — approximate 2025 value in MAD
+  silver: 6500,
+  gold:   67500
 };
 
-var EMPTY_ROWS = [
-  { desc: '', amount: '' }
-];
+var EMPTY_ROWS = [{ desc: '', amount: '' }];
 
 var DATA_DEFAULTS = {
   hawlDate: '',
@@ -23,23 +18,21 @@ var DATA_DEFAULTS = {
   nisabVal: NISAB_PRESETS.silver.toString(),
   madhab: 'general',
   bizName: '',
-  cashRows:   [ { desc: '', amount: '' } ],
-  recvRows:   [ { desc: '', amount: '' } ],
-  invRows:    [ { desc: '', amount: '' } ],
-  otherRows:  [ { desc: '', amount: '' } ],
-  liabRows:   [ { desc: '', amount: '' } ]
+  cashRows:  [{ desc: '', amount: '' }],
+  recvRows:  [{ desc: '', amount: '' }],
+  invRows:   [{ desc: '', amount: '' }],
+  otherRows: [{ desc: '', amount: '' }],
+  liabRows:  [{ desc: '', amount: '' }]
 };
 
-// ---- State ----
-
-var nisabBasis = 'silver';
+var nisabBasis  = 'silver';
 var currentUser = null;
-var currentBiz = null;
+var currentBiz  = null;
 var saveTimeout = null;
-var openMenuId = null;
+var openMenuId  = null;
 
 // =============================================
-// LOCAL STORAGE HELPERS
+// LOCAL STORAGE
 // =============================================
 
 function lsGet(key) {
@@ -49,11 +42,9 @@ function lsGet(key) {
 
 function lsSet(key, val) {
   try { localStorage.setItem(key, JSON.stringify(val)); }
-  catch (e) { showToast('Storage full — could not save'); }
+  catch (e) { showToast(t('toast.storage_full')); }
 }
 
-// Simple non-cryptographic hash for password storage
-// NOT secure — this is a local-only tool, not a real auth system
 function simpleHash(str) {
   var h = 0;
   for (var i = 0; i < str.length; i++) {
@@ -64,12 +55,14 @@ function simpleHash(str) {
 }
 
 // =============================================
-// FORMATTING
+// FORMAT
 // =============================================
 
 function fmt(n) {
+  var locale = i18n.currentLang === 'ar' ? 'ar-MA' :
+               i18n.currentLang === 'fr' ? 'fr-MA' : 'en-US';
   try {
-    return new Intl.NumberFormat('ar-MA', {
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: CURRENCY,
       maximumFractionDigits: 2
@@ -87,8 +80,10 @@ function escapeHtml(str) {
 
 function formatDate(iso) {
   if (!iso) return '\u2014';
+  var locale = i18n.currentLang === 'ar' ? 'ar-MA' :
+               i18n.currentLang === 'fr' ? 'fr-MA' : 'en-US';
   try {
-    return new Date(iso).toLocaleDateString('en-MA', {
+    return new Date(iso).toLocaleDateString(locale, {
       year: 'numeric', month: 'short', day: 'numeric'
     });
   } catch (e) { return '\u2014'; }
@@ -107,12 +102,13 @@ function showToast(msg) {
 
 function showSaveIndicator() {
   var el = document.getElementById('save-indicator');
+  el.textContent = t('toast.saved');
   el.classList.add('show');
   setTimeout(function () { el.classList.remove('show'); }, 1500);
 }
 
 // =============================================
-// AUTH SYSTEM
+// AUTH
 // =============================================
 
 function showAuthTab(tab) {
@@ -142,16 +138,16 @@ function handleRegister() {
   var pass    = document.getElementById('reg-password').value;
   var confirm = document.getElementById('reg-confirm').value;
 
-  if (!name)    return showAuthError('reg-error', 'Please enter your name.');
+  if (!name)    return showAuthError('reg-error', t('auth.err_name'));
   if (!email || email.indexOf('@') === -1)
-    return showAuthError('reg-error', 'Please enter a valid email.');
+    return showAuthError('reg-error', t('auth.err_email'));
   if (pass.length < 6)
-    return showAuthError('reg-error', 'Password must be at least 6 characters.');
+    return showAuthError('reg-error', t('auth.err_pass_short'));
   if (pass !== confirm)
-    return showAuthError('reg-error', 'Passwords do not match.');
+    return showAuthError('reg-error', t('auth.err_pass_match'));
 
   var users = lsGet('zakat_users') || {};
-  if (users[email]) return showAuthError('reg-error', 'An account with this email already exists.');
+  if (users[email]) return showAuthError('reg-error', t('auth.err_exists'));
 
   users[email] = {
     name: name,
@@ -166,7 +162,7 @@ function handleRegister() {
   currentUser = email;
   document.getElementById('dash-name').textContent = name;
   goTo('dashboard');
-  showToast('Account created');
+  showToast(t('toast.created'));
 }
 
 function handleLogin() {
@@ -174,15 +170,15 @@ function handleLogin() {
   var email = document.getElementById('login-email').value.trim().toLowerCase();
   var pass  = document.getElementById('login-password').value;
 
-  if (!email) return showAuthError('login-error', 'Please enter your email.');
-  if (!pass)  return showAuthError('login-error', 'Please enter your password.');
+  if (!email) return showAuthError('login-error', t('auth.err_email_req'));
+  if (!pass)  return showAuthError('login-error', t('auth.err_pass_req'));
 
   var users = lsGet('zakat_users') || {};
   var user  = users[email];
 
-  if (!user) return showAuthError('login-error', 'No account found with this email.');
+  if (!user) return showAuthError('login-error', t('auth.err_not_found'));
   if (user.passwordHash !== simpleHash(pass))
-    return showAuthError('login-error', 'Incorrect password.');
+    return showAuthError('login-error', t('auth.err_wrong_pass'));
 
   lsSet('zakat_session', { email: email });
   currentUser = email;
@@ -202,7 +198,7 @@ function handleLogout() {
 }
 
 // =============================================
-// DASHBOARD & BUSINESS MANAGEMENT
+// DASHBOARD
 // =============================================
 
 function getBusinesses() {
@@ -245,14 +241,14 @@ function renderDashboard() {
         '<div class="biz-card-name">' + dotHtml + escapeHtml(biz.name) + '</div>' +
         '<button class="biz-menu-btn" onclick="event.stopPropagation();toggleBizMenu(\'' + biz.id + '\')" aria-label="Options">&#8943;</button>' +
         '<div class="biz-card-actions" id="menu-' + biz.id + '">' +
-          '<button class="biz-action-item" onclick="event.stopPropagation();exportBusiness(\'' + biz.id + '\')">Export data</button>' +
-          '<button class="biz-action-item danger" onclick="event.stopPropagation();deleteBusiness(\'' + biz.id + '\')">Delete business</button>' +
+          '<button class="biz-action-item" onclick="event.stopPropagation();exportBusiness(\'' + biz.id + '\')">' + t('dash.export') + '</button>' +
+          '<button class="biz-action-item danger" onclick="event.stopPropagation();deleteBusiness(\'' + biz.id + '\')" id="delbtn-' + biz.id + '">' + t('dash.delete') + '</button>' +
         '</div>' +
       '</div>' +
-      '<div class="biz-card-date">Modified ' + formatDate(biz.lastModified) + '</div>' +
+      '<div class="biz-card-date">' + t('dash.modified') + ' ' + formatDate(biz.lastModified) + '</div>' +
       '<div class="biz-card-stats">' +
         '<div>' +
-          '<span class="biz-stat-label">Net assets</span>' +
+          '<span class="biz-stat-label">' + t('dash.net_assets') + '</span>' +
           '<span class="biz-stat-val">' + fmt(net) + '</span>' +
         '</div>' +
       '</div>' +
@@ -294,7 +290,6 @@ function toggleBizMenu(id) {
   }
 }
 
-// Close menus when clicking outside
 document.addEventListener('click', function () {
   document.querySelectorAll('.biz-card-actions.open').forEach(function (m) {
     m.classList.remove('open');
@@ -341,7 +336,7 @@ function confirmNewBusiness() {
   currentBiz = biz;
   loadBusinessData(biz.data);
   goTo(0);
-  showToast('Business created');
+  showToast(t('toast.biz_created'));
 }
 
 function openBusiness(id) {
@@ -359,20 +354,20 @@ function deleteBusiness(id) {
   if (idx === -1) return;
 
   var card = document.querySelector('[data-biz-id="' + id + '"]');
-  var btn  = card ? card.querySelector('.biz-action-item.danger') : null;
+  var btn  = document.getElementById('delbtn-' + id);
 
   if (card && card.dataset.confirming === 'true') {
     businesses.splice(idx, 1);
     saveBusinesses(businesses);
     if (currentBiz && currentBiz.id === id) currentBiz = null;
     renderDashboard();
-    showToast('Business deleted');
+    showToast(t('toast.biz_deleted'));
   } else {
     if (card) card.dataset.confirming = 'true';
-    if (btn) btn.textContent = 'Click again to confirm';
+    if (btn) btn.textContent = t('dash.delete_confirm');
     setTimeout(function () {
       if (card) card.dataset.confirming = 'false';
-      if (btn) btn.textContent = 'Delete business';
+      if (btn) btn.textContent = t('dash.delete');
     }, 3000);
   }
 }
@@ -391,7 +386,7 @@ function exportBusiness(id) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showToast('Data exported');
+  showToast(t('toast.exported'));
 }
 
 function importBusiness() {
@@ -405,8 +400,7 @@ function importBusiness() {
     reader.onload = function (ev) {
       try {
         var biz = JSON.parse(ev.target.result);
-        if (!biz.name || !biz.data) throw new Error('Invalid format');
-        // Ensure all required fields exist (migration for older exports)
+        if (!biz.name || !biz.data) throw new Error('Invalid');
         biz.data = assign({}, DATA_DEFAULTS, biz.data);
         biz.id = 'biz_' + Date.now();
         biz.lastModified = new Date().toISOString();
@@ -414,9 +408,9 @@ function importBusiness() {
         businesses.push(biz);
         saveBusinesses(businesses);
         renderDashboard();
-        showToast('Business imported');
+        showToast(t('toast.imported'));
       } catch (err) {
-        showToast('Invalid file format');
+        showToast(t('toast.invalid_file'));
       }
     };
     reader.readAsText(file);
@@ -424,15 +418,12 @@ function importBusiness() {
   input.click();
 }
 
-// Simple Object.assign polyfill-style helper
 function assign(target) {
   for (var i = 1; i < arguments.length; i++) {
     var src = arguments[i];
     if (src) {
       for (var key in src) {
-        if (src.hasOwnProperty(key)) {
-          target[key] = src[key];
-        }
+        if (src.hasOwnProperty(key)) target[key] = src[key];
       }
     }
   }
@@ -440,7 +431,7 @@ function assign(target) {
 }
 
 // =============================================
-// DATA PERSISTENCE (Save / Load)
+// DATA PERSISTENCE
 // =============================================
 
 function getRowsData(containerId) {
@@ -503,21 +494,18 @@ function rebuildRows(containerId, cls, rowsData) {
 }
 
 function loadBusinessData(data) {
-  // Migrate: fill in any missing fields with defaults
   data = assign({}, DATA_DEFAULTS, data);
 
-  document.getElementById('hawl-date').value   = data.hawlDate || new Date().toISOString().slice(0, 10);
-  document.getElementById('nisab-val').value   = data.nisabVal || '';
-  document.getElementById('madhab').value      = data.madhab || 'general';
-  document.getElementById('biz-name').value    = data.bizName || '';
+  document.getElementById('hawl-date').value = data.hawlDate || new Date().toISOString().slice(0, 10);
+  document.getElementById('nisab-val').value = data.nisabVal || '';
+  document.getElementById('madhab').value    = data.madhab || 'general';
+  document.getElementById('biz-name').value  = data.bizName || '';
 
-  // Set nisab basis pills
   nisabBasis = data.nisabBasis || 'silver';
   var pills = document.querySelectorAll('#nisab-toggle .pill');
   pills[0].classList.toggle('active', nisabBasis === 'silver');
   pills[1].classList.toggle('active', nisabBasis === 'gold');
 
-  // Rebuild all asset/liability rows
   rebuildRows('cash-rows',  'cash-amt',  data.cashRows);
   rebuildRows('recv-rows',  'recv-amt',  data.recvRows);
   rebuildRows('inv-rows',   'inv-amt',   data.invRows);
@@ -528,7 +516,7 @@ function loadBusinessData(data) {
 }
 
 // =============================================
-// CALCULATOR LOGIC
+// CALCULATOR
 // =============================================
 
 function sumClass(cls) {
@@ -572,7 +560,7 @@ function updateTotals() {
   var netEl = document.getElementById('net-display');
   if (netEl) {
     netEl.textContent = fmt(net);
-    netEl.style.color = net > 0 ? 'var(--ink)' : 'var(--text-muted)';
+    netEl.style.color = net > 0 ? '#1C1917' : '#8A7F73';
   }
 }
 
@@ -581,8 +569,8 @@ function addAssetRow(containerId, cls) {
   var div = document.createElement('div');
   div.className = 'asset-row';
   div.innerHTML =
-    '<input type="text" placeholder="Description" oninput="scheduleSave()" />' +
-    '<input type="number" placeholder="0.00" min="0" step="0.01" class="' + cls + '" oninput="updateTotals();scheduleSave()" />' +
+    '<input type="text" placeholder="' + t('ast.cash_ph') + '" oninput="scheduleSave()" />' +
+    '<input type="number" placeholder="' + t('ast.amt_ph') + '" min="0" step="0.01" class="' + cls + '" oninput="updateTotals();scheduleSave()" />' +
     '<button class="remove-btn" onclick="removeRow(this)" aria-label="Remove row">&times;</button>';
   c.appendChild(div);
 }
@@ -614,11 +602,10 @@ function calculate() {
   var nisab       = parseFloat(document.getElementById('nisab-val').value) || 0;
   var zakatDue    = (net >= nisab && nisab > 0) ? net * 0.025 : 0;
 
-  var biz  = document.getElementById('biz-name').value || 'Your Business';
+  var biz  = document.getElementById('biz-name').value || 'Business';
   var hawl = document.getElementById('hawl-date').value || new Date().toISOString().slice(0, 10);
   var yr   = new Date(hawl).getFullYear();
 
-  // Save before showing result
   saveCurrentBusiness();
 
   document.getElementById('res-year').textContent    = biz + ' \u2014 ' + yr;
@@ -633,41 +620,40 @@ function calculate() {
 
   if (nisab === 0) {
     badge.className   = 'status-badge status-none';
-    badge.textContent = 'Set nisab to calculate';
-    sub.textContent   = 'Return to settings and enter nisab value';
+    badge.textContent = t('res.set_nisab');
+    sub.textContent   = t('res.set_nisab_sub');
     document.getElementById('result-amount').textContent = fmt(0);
   } else if (net < nisab) {
     badge.className   = 'status-badge status-none';
-    badge.textContent = 'Below nisab \u2014 no zakat due';
-    sub.textContent   = 'Net wealth (' + fmt(net) + ') is below nisab (' + fmt(nisab) + ')';
+    badge.textContent = t('res.below_nisab');
+    sub.textContent   = fmt(net) + ' ' + t('res.below_sub') + ' (' + fmt(nisab) + ')';
     document.getElementById('result-amount').textContent = fmt(0);
   } else {
     badge.className   = 'status-badge status-due';
-    badge.textContent = 'Zakat is obligatory';
-    sub.textContent   = fmt(net) + ' \u00D7 2.5% \u2014 hawl completed';
+    badge.textContent = t('res.due');
+    sub.textContent   = fmt(net) + ' ' + t('res.obligatory_sub');
   }
 
-  // Build breakdown table
   var rows = [
-    ['Cash & bank balances',        fmt(cash),        false],
-    ['Trade receivables',           fmt(recv),        false],
-    ['Inventory (market value)',     fmt(inv),         false],
-    ['Other liquid assets',         fmt(other),       false],
+    [t('tbl.cash'),        fmt(cash),        false],
+    [t('tbl.recv'),        fmt(recv),        false],
+    [t('tbl.inv'),         fmt(inv),         false],
+    [t('tbl.other'),       fmt(other),       false],
     ['\u2500', '', false],
-    ['Total zakatable assets',      fmt(totalAssets), true],
-    ['Less: liabilities',           '\u2212' + fmt(liab), false],
-    ['Net zakatable wealth',        fmt(net),         true],
-    ['Nisab threshold (' + nisabBasis + ')', fmt(nisab), false]
+    [t('tbl.total'),       fmt(totalAssets), true],
+    [t('tbl.less_liab'),   '\u2212' + fmt(liab), false],
+    [t('tbl.net'),         fmt(net),         true],
+    [t('tbl.nisab') + ' (' + nisabBasis + ')', fmt(nisab), false]
   ];
 
   if (net >= nisab && nisab > 0) {
-    rows.push(['Zakat due (2.5%)', fmt(zakatDue), 'zakat']);
+    rows.push([t('tbl.zakat'), fmt(zakatDue), 'zakat']);
   }
 
   document.getElementById('breakdown-table').innerHTML = rows.map(function (r) {
     if (r[0] === '\u2500') {
       return '<tr><td colspan="2" style="padding:4px 0;border-bottom:none">' +
-        '<hr style="border:none;border-top:1px solid var(--parchment-dark)"/></td></tr>';
+        '<hr style="border:none;border-top:1px solid #D5CFC5"/></td></tr>';
     }
     var cls = r[2] === 'zakat' ? 'zakat-row' : r[2] ? 'total-row' : 'subtotal';
     return '<tr class="' + cls + '"><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>';
@@ -688,12 +674,10 @@ function goTo(screen) {
   if (screen === 'auth') {
     document.getElementById('screen-auth').classList.add('active');
     document.body.className = 'on-auth';
-
   } else if (screen === 'dashboard') {
     document.getElementById('screen-dashboard').classList.add('active');
     document.body.className = 'on-dashboard';
     renderDashboard();
-
   } else {
     document.getElementById('screen-' + screen).classList.add('active');
     document.body.className = 'on-calc';
@@ -711,7 +695,6 @@ function goTo(screen) {
 // =============================================
 
 (function init() {
-  // Check for existing session
   var session = lsGet('zakat_session');
   if (session && session.email) {
     var users = lsGet('zakat_users') || {};
@@ -723,6 +706,5 @@ function goTo(screen) {
       return;
     }
   }
-  // No valid session — show auth
   goTo('auth');
 })();
