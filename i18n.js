@@ -101,5 +101,7 @@ function t(key) {
   return i18n.t(key);
 }
 
+
+
 // Initialize on load
 i18n.init();
